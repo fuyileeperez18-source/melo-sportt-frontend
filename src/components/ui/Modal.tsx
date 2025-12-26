@@ -99,7 +99,7 @@ export function Modal({
           />
 
           {/* Modal container */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="fixed inset-0 z-[51] flex items-center justify-center p-4 overflow-y-auto">
             <motion.div
               className={cn(
                 'relative w-full bg-primary-900 rounded-2xl shadow-2xl',
@@ -273,7 +273,7 @@ export function Drawer({
           {/* Drawer */}
           <motion.div
             className={cn(
-              'fixed top-0 bottom-0 z-50 w-full bg-primary-900 shadow-2xl',
+              'fixed top-0 bottom-0 z-[51] w-full bg-primary-900 shadow-2xl',
               'border-l border-primary-800 overflow-y-auto',
               side === 'right' ? 'right-0' : 'left-0',
               drawerSizes[size]
@@ -343,7 +343,7 @@ export function BottomSheet({
 
           {/* Sheet */}
           <motion.div
-            className="fixed bottom-0 left-0 right-0 z-50 bg-primary-900 rounded-t-3xl max-h-[90vh] overflow-hidden"
+            className="fixed bottom-0 left-0 right-0 z-[51] bg-primary-900 rounded-t-3xl max-h-[90vh] overflow-hidden"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}

@@ -141,7 +141,7 @@
   }
 
   .badge-secondary {
-    @apply bg-primary-800 text-white;
+    @apply bg-primary-700 text-white;
   }
 
   .badge-success {

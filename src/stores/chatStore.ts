@@ -36,11 +36,11 @@ interface ChatState {
 const botResponses: Record<string, string> = {
   greeting: '¡Hola! 👋 Bienvenido a Walmer Store. ¿En qué puedo ayudarte hoy?',
   products: 'Tenemos una amplia variedad de productos. Puedes explorar nuestro catálogo en la sección de Productos o decirme qué estás buscando.',
-  shipping: 'Realizamos envíos a todo el país. Los tiempos de entrega varían entre 2-5 días hábiles según tu ubicación.',
+  shipping: 'Realizamos envíos a toda Colombia. Los tiempos de entrega varían entre 2-5 días hábiles según tu ubicación en el país.',
   payment: 'Aceptamos todas las tarjetas de crédito/débito, transferencias bancarias y pagos en efectivo.',
   returns: 'Tienes 30 días para realizar devoluciones. El producto debe estar sin usar y en su empaque original.',
   hours: 'Atendemos de Lunes a Viernes de 9:00 AM a 6:00 PM. Sábados de 10:00 AM a 2:00 PM.',
-  contact: 'Puedes contactarnos por WhatsApp al +1234567890 o por email a soporte@walmerstore.com',
+  contact: 'Puedes contactarnos por WhatsApp al +57 300 123 4567 o por email a contacto@walmerstore.com',
   default: 'Gracias por tu mensaje. Un agente se pondrá en contacto contigo pronto. ¿Hay algo más en lo que pueda ayudarte?',
 };
 

@@ -117,8 +117,8 @@ export function ChatWidget() {
                   <span className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">WALMER Assistant</h3>
-                  <p className="text-xs text-gray-600">Online • Ready to help</p>
+                  <h3 className="font-semibold">Asistente WALMER</h3>
+                  <p className="text-xs text-gray-600">En línea • Listo para ayudarte</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -207,7 +207,7 @@ export function ChatWidget() {
                 {/* Quick replies */}
                 {messages.length <= 1 && (
                   <div className="px-4 pb-2">
-                    <p className="text-xs text-gray-500 mb-2">Quick replies:</p>
+                    <p className="text-xs text-gray-400 mb-2">Respuestas rápidas:</p>
                     <div className="flex flex-wrap gap-2">
                       {quickReplies.map((reply) => (
                         <motion.button
@@ -233,8 +233,8 @@ export function ChatWidget() {
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder="Type a message..."
-                      className="flex-1 h-11 px-4 bg-primary-800 border border-primary-700 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-colors"
+                      placeholder="Escribe un mensaje..."
+                      className="flex-1 h-11 px-4 bg-primary-800 border border-primary-700 rounded-full text-white placeholder-gray-400 focus:outline-none focus:border-white/30 transition-colors"
                     />
                     <motion.button
                       whileHover={{ scale: 1.05 }}

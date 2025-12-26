@@ -85,7 +85,7 @@ export function Footer() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
                     required
-                    className="w-full h-14 px-6 bg-primary-900 border border-primary-700 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-colors"
+                    className="w-full h-14 px-6 bg-primary-900 border border-primary-700 rounded-full text-white placeholder-gray-400 focus:outline-none focus:border-white/30 transition-colors"
                   />
                 </div>
                 <motion.button
@@ -128,22 +128,22 @@ export function Footer() {
             {/* Contact info */}
             <div className="space-y-3 text-sm">
               <a
-                href="mailto:hello@walmerstore.com"
+                href="mailto:contacto@walmerstore.com"
                 className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors"
               >
                 <Mail className="h-4 w-4" />
-                hello@walmerstore.com
+                contacto@walmerstore.com
               </a>
               <a
-                href="tel:+1234567890"
+                href="tel:+573001234567"
                 className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors"
               >
                 <Phone className="h-4 w-4" />
-                +1 (234) 567-890
+                +57 300 123 4567
               </a>
               <div className="flex items-start gap-3 text-gray-400">
                 <MapPin className="h-4 w-4 mt-0.5" />
-                <span>123 Fashion Street<br />New York, NY 10001</span>
+                <span>Centro Histórico, Calle del Arsenal<br />Cartagena de Indias, Colombia</span>
               </div>
             </div>
 

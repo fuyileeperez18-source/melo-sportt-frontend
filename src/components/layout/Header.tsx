@@ -87,7 +87,7 @@ export function Header() {
           'fixed top-0 left-0 right-0 z-40 transition-all duration-500',
           isScrolled
             ? 'bg-black/95 backdrop-blur-lg shadow-lg'
-            : 'bg-transparent'
+            : 'bg-gradient-to-b from-black/70 to-transparent'
         )}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -97,15 +97,15 @@ export function Header() {
         <div className="hidden lg:block border-b border-white/10">
           <div className="container mx-auto px-6 py-2">
             <div className="flex items-center justify-between text-xs text-gray-400">
-              <p>Free shipping on orders over $100</p>
+              <p>Envío gratis en compras mayores a $200.000 COP</p>
               <div className="flex items-center gap-6">
                 <Link to="/track-order" className="hover:text-white transition-colors">
-                  Track Order
+                  Rastrear Pedido
                 </Link>
                 <Link to="/help" className="hover:text-white transition-colors">
-                  Help
+                  Ayuda
                 </Link>
-                <span>USD $</span>
+                <span>COP $</span>
               </div>
             </div>
           </div>

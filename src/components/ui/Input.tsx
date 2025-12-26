@@ -64,7 +64,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             onBlur={() => setIsFocused(false)}
             className={cn(
               'w-full h-12 px-4 bg-primary-900 border border-primary-700 rounded-lg',
-              'text-white placeholder-gray-500',
+              'text-white placeholder-gray-400',
               'transition-all duration-300',
               'focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30',
               'disabled:opacity-50 disabled:cursor-not-allowed',
@@ -191,7 +191,7 @@ export const FloatingLabelInput = forwardRef<HTMLInputElement, FloatingLabelInpu
           ref={ref}
           className={cn(
             'peer w-full h-14 px-4 pt-4 bg-primary-900 border border-primary-700 rounded-lg',
-            'text-white placeholder-transparent',
+            'text-white placeholder-gray-400',
             'transition-all duration-300',
             'focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30',
             className
@@ -250,7 +250,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           className={cn(
             'w-full min-h-[120px] px-4 py-3 bg-primary-900 border border-primary-700 rounded-lg',
-            'text-white placeholder-gray-500',
+            'text-white placeholder-gray-400',
             'transition-all duration-300',
             'focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30',
             'disabled:opacity-50 disabled:cursor-not-allowed',
