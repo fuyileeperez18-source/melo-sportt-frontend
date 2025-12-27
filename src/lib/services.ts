@@ -236,9 +236,11 @@ export const orderService = {
 // USER SERVICE
 // ============================================
 
+import type { TeamMember, Commission, CommissionSummary, UserNotification } from '@/types';
+
 export const userService = {
   async getProfile(userId: string) {
-    const response = await api.get<User & { addresses: Address[] }>('/users/profile');
+    const response = await api.get<User & { addresses: Address[]; team_member?: TeamMember }>('/users/profile');
     return response.data!;
   },
 
@@ -270,6 +272,75 @@ export const userService = {
 
   async deleteAddress(addressId: string) {
     await api.delete(`/users/addresses/${addressId}`);
+  },
+
+  // Team member functions
+  async getMyTeamMember() {
+    const response = await api.get<TeamMember>('/users/team/me');
+    return response.data;
+  },
+
+  async getAllTeamMembers() {
+    const response = await api.get<TeamMember[]>('/users/team/all');
+    return response.data || [];
+  },
+
+  async createTeamMember(data: Partial<TeamMember>) {
+    const response = await api.post<TeamMember>('/users/team', data);
+    return response.data!;
+  },
+
+  async updateTeamMember(userId: string, updates: Partial<TeamMember>) {
+    const response = await api.put<TeamMember>(`/users/team/${userId}`, updates);
+    return response.data!;
+  },
+
+  // Commission functions
+  async getMyCommissions(filters?: { status?: string; limit?: number; offset?: number }) {
+    const params: Record<string, string> = {};
+    if (filters?.status) params.status = filters.status;
+    if (filters?.limit) params.limit = filters.limit.toString();
+    if (filters?.offset) params.offset = filters.offset.toString();
+
+    const response = await api.get<Commission[]>('/users/commissions/me', params);
+    return { data: response.data || [], count: (response as any).count || 0 };
+  },
+
+  async getCommissionSummary() {
+    const response = await api.get<CommissionSummary>('/users/commissions/summary');
+    return response.data!;
+  },
+
+  async updateCommissionStatus(commissionId: string, status: string) {
+    const response = await api.put<Commission>(`/users/commissions/${commissionId}/status`, { status });
+    return response.data!;
+  },
+
+  // Notifications
+  async getNotifications(limit = 20) {
+    const response = await api.get<UserNotification[]>('/users/notifications', { limit: limit.toString() });
+    return { data: response.data || [], unread_count: (response as any).unread_count || 0 };
+  },
+
+  async markNotificationAsRead(notificationId: string) {
+    await api.put(`/users/notifications/${notificationId}/read`);
+  },
+
+  async markAllNotificationsAsRead() {
+    await api.put('/users/notifications/read-all');
+  },
+
+  // Owner dashboard
+  async getOwnerDashboardStats() {
+    const response = await api.get<{
+      total_revenue: number;
+      total_orders: number;
+      total_customers: number;
+      total_products: number;
+      pending_commissions: number;
+      monthly_revenue: { month: string; revenue: number }[];
+    }>('/users/dashboard/owner');
+    return response.data!;
   },
 };
 

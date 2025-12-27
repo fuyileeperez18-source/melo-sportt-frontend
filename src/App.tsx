@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
 
 // Layouts
 import { Layout, SimpleLayout } from '@/components/layout/Layout';
@@ -20,6 +21,17 @@ import { AdminCustomers } from '@/pages/admin/AdminCustomers';
 import { AdminAnalytics } from '@/pages/admin/AdminAnalytics';
 import { AdminSettings } from '@/pages/admin/AdminSettings';
 
+// Account Pages
+import {
+  AccountPage,
+  EditProfilePage,
+  MyOrdersPage,
+  MyCommissionsPage,
+  OwnerDashboardPage,
+  TeamManagementPage,
+  CommissionsManagementPage
+} from '@/pages/account';
+
 // Stores
 import { useAuthStore } from '@/stores/authStore';
 
@@ -37,7 +49,17 @@ const queryClient = new QueryClient({
 });
 
 // Protected route wrapper
-function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
+function ProtectedRoute({
+  children,
+  adminOnly = false,
+  ownerOnly = false,
+  teamOnly = false
+}: {
+  children: React.ReactNode;
+  adminOnly?: boolean;
+  ownerOnly?: boolean;
+  teamOnly?: boolean;
+}) {
   const { isAuthenticated, profile, isLoading } = useAuthStore();
 
   if (isLoading) {
@@ -52,8 +74,19 @@ function ProtectedRoute({ children, adminOnly = false }: { children: React.React
     return <Navigate to="/login" replace />;
   }
 
+  // Solo propietario (super_admin)
+  if (ownerOnly && profile?.role !== 'super_admin') {
+    return <Navigate to="/account" replace />;
+  }
+
+  // Admin o superior
   if (adminOnly && profile?.role !== 'admin' && profile?.role !== 'super_admin') {
     return <Navigate to="/" replace />;
+  }
+
+  // Miembro del equipo (developer, admin, super_admin)
+  if (teamOnly && profile?.role === 'customer') {
+    return <Navigate to="/account" replace />;
   }
 
   return <>{children}</>;
@@ -116,7 +149,15 @@ function App() {
               path="/account"
               element={
                 <ProtectedRoute>
-                  <div className="min-h-screen bg-black py-20 text-center text-white">My Account</div>
+                  <AccountPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account/edit"
+              element={
+                <ProtectedRoute>
+                  <EditProfilePage />
                 </ProtectedRoute>
               }
             />
@@ -124,7 +165,73 @@ function App() {
               path="/account/orders"
               element={
                 <ProtectedRoute>
-                  <div className="min-h-screen bg-black py-20 text-center text-white">My Orders</div>
+                  <MyOrdersPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account/orders/:id"
+              element={
+                <ProtectedRoute>
+                  <div className="min-h-screen bg-black py-20 text-center text-white">Order Details</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account/addresses"
+              element={
+                <ProtectedRoute>
+                  <div className="min-h-screen bg-black py-20 text-center text-white">Mis Direcciones</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account/notifications"
+              element={
+                <ProtectedRoute>
+                  <div className="min-h-screen bg-black py-20 text-center text-white">Notificaciones</div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account/settings"
+              element={
+                <ProtectedRoute>
+                  <div className="min-h-screen bg-black py-20 text-center text-white">Configuración</div>
+                </ProtectedRoute>
+              }
+            />
+            {/* Developer/Team member routes */}
+            <Route
+              path="/account/my-commissions"
+              element={
+                <ProtectedRoute teamOnly>
+                  <MyCommissionsPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* Owner only routes */}
+            <Route
+              path="/account/owner-dashboard"
+              element={
+                <ProtectedRoute ownerOnly>
+                  <OwnerDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account/team"
+              element={
+                <ProtectedRoute ownerOnly>
+                  <TeamManagementPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account/commissions"
+              element={
+                <ProtectedRoute ownerOnly>
+                  <CommissionsManagementPage />
                 </ProtectedRoute>
               }
             />
@@ -147,6 +254,29 @@ function App() {
             }
           />
         </Routes>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#18181b',
+              color: '#fff',
+              border: '1px solid #27272a',
+            },
+            success: {
+              iconTheme: {
+                primary: '#22c55e',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
       </BrowserRouter>
     </QueryClientProvider>
   );
