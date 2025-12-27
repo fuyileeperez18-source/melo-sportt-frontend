@@ -129,13 +129,32 @@ const categories = [
   { value: 'sudaderas', label: 'Sudaderas' },
   { value: 'shorts', label: 'Shorts' },
   { value: 'zapatos', label: 'Zapatos' },
+  { value: 'vestidos', label: 'Vestidos' },
+  { value: 'faldas', label: 'Faldas' },
 ];
 
 const genderOptions = [
-  { value: '', label: 'Todos los Géneros' },
+  { value: '', label: 'Seleccionar Género' },
   { value: 'hombre', label: 'Hombre' },
   { value: 'mujer', label: 'Mujer' },
   { value: 'unisex', label: 'Unisex' },
+  { value: 'nino', label: 'Niño' },
+  { value: 'nina', label: 'Niña' },
+];
+
+const productTypeOptions = [
+  { value: '', label: 'Seleccionar Tipo' },
+  { value: 'camiseta', label: 'Camiseta' },
+  { value: 'camisa', label: 'Camisa' },
+  { value: 'pantalon', label: 'Pantalón' },
+  { value: 'chaqueta', label: 'Chaqueta' },
+  { value: 'sudadera', label: 'Sudadera' },
+  { value: 'short', label: 'Short' },
+  { value: 'accesorio', label: 'Accesorio' },
+  { value: 'zapato', label: 'Zapato' },
+  { value: 'vestido', label: 'Vestido' },
+  { value: 'falda', label: 'Falda' },
+  { value: 'otro', label: 'Otro' },
 ];
 
 const sizeOptions = [
@@ -145,6 +164,44 @@ const sizeOptions = [
   { value: 'L', label: 'L' },
   { value: 'XL', label: 'XL' },
   { value: 'XXL', label: 'XXL' },
+  { value: '28', label: '28' },
+  { value: '30', label: '30' },
+  { value: '32', label: '32' },
+  { value: '34', label: '34' },
+  { value: '36', label: '36' },
+  { value: '38', label: '38' },
+  { value: '40', label: '40' },
+  { value: '42', label: '42' },
+];
+
+const colorOptions = [
+  { value: 'Negro', label: 'Negro', color: '#000000' },
+  { value: 'Blanco', label: 'Blanco', color: '#FFFFFF' },
+  { value: 'Gris', label: 'Gris', color: '#808080' },
+  { value: 'Azul', label: 'Azul', color: '#0066CC' },
+  { value: 'Rojo', label: 'Rojo', color: '#CC0000' },
+  { value: 'Verde', label: 'Verde', color: '#006600' },
+  { value: 'Amarillo', label: 'Amarillo', color: '#FFCC00' },
+  { value: 'Rosa', label: 'Rosa', color: '#FF66B2' },
+  { value: 'Morado', label: 'Morado', color: '#660099' },
+  { value: 'Naranja', label: 'Naranja', color: '#FF6600' },
+  { value: 'Marrón', label: 'Marrón', color: '#663300' },
+  { value: 'Beige', label: 'Beige', color: '#F5DEB3' },
+];
+
+const materialOptions = [
+  { value: '', label: 'Seleccionar Material' },
+  { value: 'Algodón', label: 'Algodón' },
+  { value: 'Poliéster', label: 'Poliéster' },
+  { value: 'Algodón/Poliéster', label: 'Algodón/Poliéster' },
+  { value: 'Lana', label: 'Lana' },
+  { value: 'Seda', label: 'Seda' },
+  { value: 'Lino', label: 'Lino' },
+  { value: 'Denim', label: 'Denim' },
+  { value: 'Cuero', label: 'Cuero' },
+  { value: 'Sintético', label: 'Sintético' },
+  { value: 'Nylon', label: 'Nylon' },
+  { value: 'Spandex', label: 'Spandex' },
 ];
 
 const statusConfig = {
@@ -168,13 +225,20 @@ export function AdminProducts() {
     name: '',
     sku: '',
     description: '',
+    shortDescription: '',
     price: '',
     comparePrice: '',
+    costPerItem: '',
     category: '',
+    productType: '',
     gender: '',
     stock: '',
-    colors: '',
+    brand: '',
+    material: '',
+    weight: '',
+    colors: [] as string[],
     sizes: [] as string[],
+    tags: '',
     isFeatured: false,
     isActive: true,
   });
@@ -212,18 +276,34 @@ export function AdminProducts() {
     }));
   };
 
+  const handleColorToggle = (color: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      colors: prev.colors.includes(color)
+        ? prev.colors.filter((c) => c !== color)
+        : [...prev.colors, color],
+    }));
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
       sku: '',
       description: '',
+      shortDescription: '',
       price: '',
       comparePrice: '',
+      costPerItem: '',
       category: '',
+      productType: '',
       gender: '',
       stock: '',
-      colors: '',
+      brand: '',
+      material: '',
+      weight: '',
+      colors: [],
       sizes: [],
+      tags: '',
       isFeatured: false,
       isActive: true,
     });
@@ -243,25 +323,58 @@ export function AdminProducts() {
       return;
     }
 
+    if (!formData.gender) {
+      toast.error('Por favor selecciona el género');
+      return;
+    }
+
+    if (!formData.productType) {
+      toast.error('Por favor selecciona el tipo de producto');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      // TODO: Enviar datos al backend
+      // Generar slug del nombre
+      const slug = formData.name
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+
       const productData = {
-        ...formData,
+        name: formData.name,
+        slug: slug + '-' + Date.now(),
+        description: formData.description,
+        short_description: formData.shortDescription,
         price: parseFloat(formData.price),
-        comparePrice: formData.comparePrice ? parseFloat(formData.comparePrice) : null,
-        stock: parseInt(formData.stock) || 0,
-        colors: formData.colors.split(',').map((c) => c.trim()).filter(Boolean),
+        compare_at_price: formData.comparePrice ? parseFloat(formData.comparePrice) : null,
+        cost_per_item: formData.costPerItem ? parseFloat(formData.costPerItem) : null,
+        sku: formData.sku || `SKU-${Date.now()}`,
+        quantity: parseInt(formData.stock) || 0,
+        category_id: formData.category,
+        brand: formData.brand || null,
+        tags: formData.tags ? formData.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
+        is_active: formData.isActive,
+        is_featured: formData.isFeatured,
+        gender: formData.gender,
+        product_type: formData.productType,
+        sizes: formData.sizes,
+        colors: formData.colors,
+        material: formData.material || null,
+        weight: formData.weight ? parseFloat(formData.weight) : null,
         images: productImages.map((img) => ({
           url: img.url,
-          alt_text: img.alt_text,
+          alt_text: img.alt_text || formData.name,
           position: img.position,
           is_primary: img.is_primary,
         })),
       };
 
-      console.log('Product data:', productData);
+      console.log('Product data to send:', productData);
+      // TODO: Enviar al backend con api.post('/products', productData)
       toast.success('Producto agregado correctamente');
       setIsAddModalOpen(false);
       resetForm();
@@ -445,81 +558,155 @@ export function AdminProducts() {
         title="Agregar Nuevo Producto"
         size="lg"
       >
-        <form onSubmit={handleSubmitProduct} className="space-y-6">
-          <div className="grid sm:grid-cols-2 gap-4">
-            <Input
-              label="Nombre del Producto *"
-              placeholder="Camiseta Algodón Premium"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              required
-            />
-            <Input
-              label="SKU"
-              placeholder="CAP-001"
-              value={formData.sku}
-              onChange={(e) => handleInputChange('sku', e.target.value)}
-            />
+        <form onSubmit={handleSubmitProduct} className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+          {/* Información Básica */}
+          <div className="border-b border-primary-800 pb-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Información Básica</h3>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Input
+                label="Nombre del Producto *"
+                placeholder="Camiseta Algodón Premium"
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                required
+              />
+              <Input
+                label="SKU"
+                placeholder="CAP-001 (se genera automáticamente)"
+                value={formData.sku}
+                onChange={(e) => handleInputChange('sku', e.target.value)}
+              />
+            </div>
+
+            <div className="mt-4">
+              <Input
+                label="Descripción Corta"
+                placeholder="Breve descripción para listados"
+                value={formData.shortDescription}
+                onChange={(e) => handleInputChange('shortDescription', e.target.value)}
+              />
+            </div>
+
+            <div className="mt-4">
+              <Textarea
+                label="Descripción Completa"
+                placeholder="Descripción detallada del producto..."
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+              />
+            </div>
           </div>
 
-          <Textarea
-            label="Descripción"
-            placeholder="Ingresa la descripción del producto..."
-            value={formData.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
-          />
+          {/* Clasificación */}
+          <div className="border-b border-primary-800 pb-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Clasificación</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Select
+                label="Categoría *"
+                options={categories.filter((c) => c.value !== '')}
+                value={formData.category}
+                onChange={(e) => handleInputChange('category', e.target.value)}
+              />
+              <Select
+                label="Tipo de Producto *"
+                options={productTypeOptions}
+                value={formData.productType}
+                onChange={(e) => handleInputChange('productType', e.target.value)}
+              />
+              <Select
+                label="Género *"
+                options={genderOptions}
+                value={formData.gender}
+                onChange={(e) => handleInputChange('gender', e.target.value)}
+              />
+              <Input
+                label="Marca"
+                placeholder="Nike, Adidas, etc."
+                value={formData.brand}
+                onChange={(e) => handleInputChange('brand', e.target.value)}
+              />
+            </div>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <Input
-              label="Precio (COP) *"
-              type="number"
-              placeholder="89000"
-              value={formData.price}
-              onChange={(e) => handleInputChange('price', e.target.value)}
-              required
-            />
-            <Input
-              label="Precio Comparado (COP)"
-              type="number"
-              placeholder="120000"
-              value={formData.comparePrice}
-              onChange={(e) => handleInputChange('comparePrice', e.target.value)}
-            />
+            <div className="mt-4">
+              <Input
+                label="Etiquetas (separadas por coma)"
+                placeholder="deportivo, casual, verano, oferta"
+                value={formData.tags}
+                onChange={(e) => handleInputChange('tags', e.target.value)}
+              />
+            </div>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-4">
-            <Select
-              label="Categoría *"
-              options={categories.filter((c) => c.value !== '')}
-              value={formData.category}
-              onChange={(e) => handleInputChange('category', e.target.value)}
-            />
-            <Select
-              label="Género"
-              options={genderOptions.filter((g) => g.value !== '')}
-              value={formData.gender}
-              onChange={(e) => handleInputChange('gender', e.target.value)}
-            />
-            <Input
-              label="Stock"
-              type="number"
-              placeholder="100"
-              value={formData.stock}
-              onChange={(e) => handleInputChange('stock', e.target.value)}
-            />
+          {/* Precios e Inventario */}
+          <div className="border-b border-primary-800 pb-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Precios e Inventario</h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Input
+                label="Precio (COP) *"
+                type="number"
+                placeholder="89000"
+                value={formData.price}
+                onChange={(e) => handleInputChange('price', e.target.value)}
+                required
+              />
+              <Input
+                label="Precio Anterior (COP)"
+                type="number"
+                placeholder="120000"
+                value={formData.comparePrice}
+                onChange={(e) => handleInputChange('comparePrice', e.target.value)}
+                hint="Para mostrar descuento"
+              />
+              <Input
+                label="Costo por Unidad"
+                type="number"
+                placeholder="50000"
+                value={formData.costPerItem}
+                onChange={(e) => handleInputChange('costPerItem', e.target.value)}
+                hint="Para calcular ganancias"
+              />
+              <Input
+                label="Stock Disponible"
+                type="number"
+                placeholder="100"
+                value={formData.stock}
+                onChange={(e) => handleInputChange('stock', e.target.value)}
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Tallas Disponibles</label>
+          {/* Especificaciones */}
+          <div className="border-b border-primary-800 pb-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Especificaciones</h3>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Select
+                label="Material"
+                options={materialOptions}
+                value={formData.material}
+                onChange={(e) => handleInputChange('material', e.target.value)}
+              />
+              <Input
+                label="Peso (gramos)"
+                type="number"
+                placeholder="250"
+                value={formData.weight}
+                onChange={(e) => handleInputChange('weight', e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Tallas */}
+          <div className="border-b border-primary-800 pb-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Tallas Disponibles</h3>
             <div className="flex flex-wrap gap-2">
               {sizeOptions.map((size) => (
                 <label
                   key={size.value}
                   className={cn(
-                    'flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors',
+                    'flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-colors border',
                     formData.sizes.includes(size.value)
-                      ? 'bg-white text-black'
-                      : 'bg-primary-800 hover:bg-primary-700'
+                      ? 'bg-white text-black border-white'
+                      : 'bg-primary-800 hover:bg-primary-700 border-primary-700'
                   )}
                 >
                   <input
@@ -537,19 +724,56 @@ export function AdminProducts() {
                 </label>
               ))}
             </div>
+            {formData.sizes.length > 0 && (
+              <p className="text-gray-400 text-sm mt-2">
+                Seleccionadas: {formData.sizes.join(', ')}
+              </p>
+            )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Colores</label>
-            <Input
-              placeholder="Ej: Negro, Blanco, Gris (separados por coma)"
-              value={formData.colors}
-              onChange={(e) => handleInputChange('colors', e.target.value)}
-            />
+          {/* Colores */}
+          <div className="border-b border-primary-800 pb-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Colores Disponibles</h3>
+            <div className="flex flex-wrap gap-2">
+              {colorOptions.map((color) => (
+                <label
+                  key={color.value}
+                  className={cn(
+                    'flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors border',
+                    formData.colors.includes(color.value)
+                      ? 'bg-white text-black border-white'
+                      : 'bg-primary-800 hover:bg-primary-700 border-primary-700'
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.colors.includes(color.value)}
+                    onChange={() => handleColorToggle(color.value)}
+                    className="sr-only"
+                  />
+                  <span
+                    className="w-4 h-4 rounded-full border border-gray-400"
+                    style={{ backgroundColor: color.color }}
+                  />
+                  <span className={cn(
+                    'text-sm font-medium',
+                    formData.colors.includes(color.value) ? 'text-black' : 'text-white'
+                  )}>
+                    {color.label}
+                  </span>
+                </label>
+              ))}
+            </div>
+            {formData.colors.length > 0 && (
+              <p className="text-gray-400 text-sm mt-2">
+                Seleccionados: {formData.colors.join(', ')}
+              </p>
+            )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-3">Imágenes del Producto *</label>
+          {/* Imágenes */}
+          <div className="border-b border-primary-800 pb-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Imágenes del Producto *</h3>
             <ImageUpload
               images={productImages}
               onChange={setProductImages}
@@ -557,28 +781,33 @@ export function AdminProducts() {
             />
           </div>
 
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.isFeatured}
-                onChange={(e) => handleInputChange('isFeatured', e.target.checked)}
-                className="w-4 h-4 rounded border-primary-700 bg-primary-900 text-white"
-              />
-              <span className="text-gray-300 text-sm">Producto destacado</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.isActive}
-                onChange={(e) => handleInputChange('isActive', e.target.checked)}
-                className="w-4 h-4 rounded border-primary-700 bg-primary-900 text-white"
-              />
-              <span className="text-gray-300 text-sm">Producto activo</span>
-            </label>
+          {/* Opciones */}
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-4">Opciones de Publicación</h3>
+            <div className="flex flex-wrap items-center gap-6">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.isActive}
+                  onChange={(e) => handleInputChange('isActive', e.target.checked)}
+                  className="w-5 h-5 rounded border-primary-700 bg-primary-900 text-white"
+                />
+                <span className="text-gray-300">Producto activo (visible en tienda)</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.isFeatured}
+                  onChange={(e) => handleInputChange('isFeatured', e.target.checked)}
+                  className="w-5 h-5 rounded border-primary-700 bg-primary-900 text-white"
+                />
+                <span className="text-gray-300">Producto destacado (aparece en inicio)</span>
+              </label>
+            </div>
           </div>
 
-          <div className="flex gap-4 pt-4">
+          {/* Botones */}
+          <div className="flex gap-4 pt-4 sticky bottom-0 bg-primary-900 py-4 -mb-4">
             <Button type="button" variant="outline" onClick={handleCloseModal} className="flex-1">
               Cancelar
             </Button>
