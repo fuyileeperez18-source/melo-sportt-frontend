@@ -250,7 +250,7 @@ export function ChatWidget() {
                             )}
                           >
                             <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                            {message.metadata?.edited && (
+                            {(message.metadata?.edited as boolean) && (
                               <span className="text-xs opacity-60">(editado)</span>
                             )}
                           </div>
